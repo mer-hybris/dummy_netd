@@ -1,0 +1,23 @@
+[Unit]
+Description=A simple dummy netd service implementation.
+After=droid-hal-init.service
+Before=ofono.service
+
+[Service]
+Type=notify
+ExecStart=/usr/sbin/dummy_netd
+Restart=always
+TimeoutStartSec=60
+# Sandboxing
+CapabilityBoundingSet=CAP_DAC_READ_SEARCH
+DeviceAllow=/dev/hwbinder rw
+DevicePolicy=strict
+NoNewPrivileges=yes
+PrivateNetwork=true
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=full
+
+[Install]
+WantedBy=graphical.target
+
