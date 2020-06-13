@@ -10,6 +10,7 @@ Source:         %{name}-%{version}.tar.bz2
 
 BuildRequires:  libgbinder-devel >= 1.0.7
 BuildRequires:  pkgconfig(libsystemd)
+BuildRequires:  pkgconfig(glib-2.0)
 
 %description
 dummy_netd provides the android.system.net.netd@1.1 service for devices which cannot work without it.
