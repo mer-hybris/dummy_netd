@@ -5,9 +5,11 @@ DESTDIR ?= /
 CFLAGS = -O3 -Wall -Werror -flto
 CFLAGS += `pkg-config --cflags libgbinder`
 CFLAGS += `pkg-config --cflags libsystemd`
+CFLAGS += `pkg-config --cflags glib-2.0`
 
 LIBS += `pkg-config --libs libgbinder`
 LIBS += `pkg-config --libs libsystemd`
+LIBS += `pkg-config --libs glib-2.0`
 
 dummy_netd: $(OBJS)
 	$(CC) $(LDFLAGS) $(OBJS) $(LIBS) -o $@
