@@ -17,22 +17,32 @@ dummy_netd provides the android.system.net.netd@1.1 service for devices which ca
 %autosetup -n %{name}-%{version}
 
 %build
-%make_build
+make KEEP_SYMBOLS=1 release
 
 %install
-%make_install
-mkdir -p %{buildroot}%{_unitdir}
-install -D -p -m 644 dummy_netd.service %{buildroot}%{_unitdir}/dummy_netd.service
-cp dummy_netd.service %{buildroot}%{_unitdir}
-mkdir %{buildroot}%{_unitdir}/graphical.target.wants
-ln -s ../dummy_netd.service %{buildroot}%{_unitdir}/graphical.target.wants/dummy_netd.service
+%define target_wants_dir %{_unitdir}/graphical.target.wants
+%define service dummy_netd
+rm -rf %{buildroot}
+make install DESTDIR=%{buildroot} UNITDIR=%{_unitdir}
+mkdir -p %{buildroot}/%{target_wants_dir}
+ln -s ../%{service}.service %{buildroot}/%{target_wants_dir}/%{service}.service
 
 %clean
 rm -rf %{buildroot}
 make clean
 
+%pre
+systemctl stop %{service} ||:
+
+%post
+systemctl daemon-reload ||:
+systemctl start %{service} ||:
+
+%postun
+systemctl daemon-reload ||:
+
 %files
 %defattr(-,root,root,-)
 %{_sbindir}/dummy_netd
-%{_unitdir}/graphical.target.wants/dummy_netd.service
-%{_unitdir}/dummy_netd.service
+%{target_wants_dir}/%{service}.service
+%{_unitdir}/%{service}.service
