@@ -1,9 +1,7 @@
 Name:           dummy_netd
 Version:        1.0.0
-Release:        1%{?dist}
+Release:        1
 Summary:        A simple dummy netd service implementation.
-
-Group:          Applications/System
 License:        BSD
 URL:            https://github.com/mer-hybris/dummy_netd
 Source:         %{name}-%{version}.tar.bz2
@@ -16,25 +14,25 @@ BuildRequires:  pkgconfig(glib-2.0)
 dummy_netd provides the android.system.net.netd@1.1 service for devices which cannot work without it.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -n %{name}-%{version}
 
 %build
-make %{?_smp_mflags}
+%make_build
 
 %install
-rm -rf $RPM_BUILD_ROOT
-make install DESTDIR=$RPM_BUILD_ROOT
-mkdir -p $RPM_BUILD_ROOT/lib/systemd/system
-cp dummy_netd.service $RPM_BUILD_ROOT/lib/systemd/system
-mkdir $RPM_BUILD_ROOT/lib/systemd/system/graphical.target.wants
-ln -s ../dummy_netd.service $RPM_BUILD_ROOT/lib/systemd/system/graphical.target.wants/dummy_netd.service
+%make_install
+mkdir -p %{buildroot}%{_unitdir}
+install -D -p -m 644 dummy_netd.service %{buildroot}%{_unitdir}/dummy_netd.service
+cp dummy_netd.service %{buildroot}%{_unitdir}
+mkdir %{buildroot}%{_unitdir}/graphical.target.wants
+ln -s ../dummy_netd.service %{buildroot}%{_unitdir}/graphical.target.wants/dummy_netd.service
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 make clean
 
 %files
 %defattr(-,root,root,-)
-/usr/sbin/dummy_netd
-/lib/systemd/system/graphical.target.wants/dummy_netd.service
-/lib/systemd/system/dummy_netd.service
+%{_sbindir}/dummy_netd
+%{_unitdir}/graphical.target.wants/dummy_netd.service
+%{_unitdir}/dummy_netd.service
