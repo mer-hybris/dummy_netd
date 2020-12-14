@@ -11,7 +11,7 @@ UNITDIR ?= usr/lib/systemd/system
 # Required packages
 #
 
-LIB_PKGS = libgbinder libsystemd glib-2.0
+LIB_PKGS = libgbinder libglibutil libsystemd glib-2.0
 PKGS = $(LIB_PKGS)
 
 #

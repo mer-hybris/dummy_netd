@@ -6,9 +6,14 @@ License:        BSD
 URL:            https://github.com/mer-hybris/dummy_netd
 Source:         %{name}-%{version}.tar.bz2
 
-BuildRequires:  libgbinder-devel >= 1.0.7
+%define libgbinder_version 1.0.26
+
+BuildRequires:  pkgconfig(libgbinder) >= %{libgbinder_version}
+BuildRequires:  pkgconfig(libglibutil)
 BuildRequires:  pkgconfig(libsystemd)
 BuildRequires:  pkgconfig(glib-2.0)
+
+Requires:       libgbinder >= %{libgbinder_version}
 
 %description
 dummy_netd provides the android.system.net.netd@1.1 service for devices which cannot work without it.
