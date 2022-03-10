@@ -4,6 +4,7 @@
 # These are often defined by the build
 #
 
+USE_SYSTEMD ?= 1
 DESTDIR ?= /
 UNITDIR ?= usr/lib/systemd/system
 
@@ -11,7 +12,10 @@ UNITDIR ?= usr/lib/systemd/system
 # Required packages
 #
 
-LIB_PKGS = libgbinder libglibutil libsystemd glib-2.0
+LIB_PKGS = libgbinder libglibutil glib-2.0
+ifeq ($(USE_SYSTEMD),1)
+LIB_PKGS += libsystemd
+endif
 PKGS = $(LIB_PKGS)
 
 #
@@ -47,7 +51,7 @@ DEBUG_DEFS = -DDEBUG
 RELEASE_DEFS =
 WARNINGS = -Wall -Wunused-result
 FULL_CFLAGS = $(CFLAGS) $(DEFINES) $(WARNINGS) $(INCLUDES) \
-  -MMD -MP $(shell pkg-config --cflags $(PKGS))
+  -MMD -MP $(shell pkg-config --cflags $(PKGS)) -DUSE_SYSTEMD=$(USE_SYSTEMD)
 FULL_LDFLAGS = $(LDFLAGS)
 
 KEEP_SYMBOLS ?= 0
@@ -135,14 +139,20 @@ INSTALL = install
 INSTALL_DIRS = $(INSTALL) -d
 
 INSTALL_SBIN_DIR = $(DESTDIR_)usr/sbin
+ifeq ($(USE_SYSTEMD),1)
 INSTALL_SYSTEMD_DIR = $(DESTDIR_)$(UNITDIR)
+endif
 
 install: $(RELEASE_EXE) $(INSTALL_SBIN_DIR) $(INSTALL_SYSTEMD_DIR)
+ifeq ($(USE_SYSTEMD),1)
 	$(INSTALL) -m 644 dummy_netd.service $(INSTALL_SYSTEMD_DIR)
+endif
 	$(INSTALL) -m 755 $(RELEASE_EXE) $(INSTALL_SBIN_DIR)
 
 $(INSTALL_SBIN_DIR):
 	$(INSTALL_DIRS) $@
 
+ifeq ($(USE_SYSTEMD),1)
 $(INSTALL_SYSTEMD_DIR):
 	$(INSTALL_DIRS) $@
+endif
