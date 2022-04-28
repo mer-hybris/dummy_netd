@@ -34,7 +34,9 @@
 #include <glib-unix.h>
 #include <gbinder.h>
 #include <gutil_log.h>
+#if USE_SYSTEMD
 #include <systemd/sd-daemon.h>
+#endif
 #include <stdio.h>
 
 #define BINDER_DEVICE "/dev/hwbinder"
@@ -98,8 +100,10 @@ netd_run(
         GBinderServiceName* name = gbinder_servicename_new
             (svcmgr, obj, NETD_SLOT);
 
+#if USE_SYSTEMD
         /* Do we need to wait until the name is actually registered? */
         sd_notify(0, "READY=1");
+#endif
 
         /* Run the event loop */
         g_main_loop_run(loop);
