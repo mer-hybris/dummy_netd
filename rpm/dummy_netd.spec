@@ -48,6 +48,7 @@ systemctl daemon-reload ||:
 
 %files
 %defattr(-,root,root,-)
+%license LICENSE
 %{_sbindir}/dummy_netd
 %{target_wants_dir}/%{service}.service
 %{_unitdir}/%{service}.service
