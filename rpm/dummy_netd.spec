@@ -1,5 +1,5 @@
 Name:           dummy_netd
-Version:        1.0.1
+Version:        1.0.2
 Release:        1
 Summary:        A simple dummy netd service implementation.
 License:        BSD
