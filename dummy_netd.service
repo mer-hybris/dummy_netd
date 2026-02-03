@@ -5,11 +5,13 @@ Before=ofono.service
 
 [Service]
 Type=notify
-ExecStart=/usr/sbin/dummy_netd
+EnvironmentFile=-/etc/sysconfig/dummy_netd
+ExecStart=/usr/sbin/dummy_netd $DUMMY_NETD_ARGS
 Restart=always
 TimeoutStartSec=60
 # Sandboxing
 CapabilityBoundingSet=CAP_DAC_READ_SEARCH
+DeviceAllow=/dev/binder rw
 DeviceAllow=/dev/hwbinder rw
 DevicePolicy=strict
 NoNewPrivileges=yes

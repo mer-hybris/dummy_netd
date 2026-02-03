@@ -39,9 +39,12 @@
 #endif
 #include <stdio.h>
 
-#define BINDER_DEVICE "/dev/hwbinder"
+#define BINDER_DEVICE "/dev/binder"
+#define HWBINDER_DEVICE "/dev/hwbinder"
 #define NETD_IFACE "android.system.net.netd@1.1::INetd"
+#define NETD_AIDL_IFACE "android.system.net.netd.INetd"
 #define NETD_SLOT "default"
+#define NETD_AIDL_SLOT "android.system.net.netd.INetd/default"
 
 #define RET_OK      0
 #define RET_CMDLINE 1
@@ -95,10 +98,20 @@ netd_run(
         GMainLoop* loop = g_main_loop_new(NULL, TRUE);
         guint sigterm = g_unix_signal_add(SIGTERM, netd_signal, loop);
         guint sigint = g_unix_signal_add(SIGINT, netd_signal, loop);
-        GBinderLocalObject* obj = gbinder_servicemanager_new_local_object
-            (svcmgr, NETD_IFACE, netd_handler, NULL);
-        GBinderServiceName* name = gbinder_servicename_new
-            (svcmgr, obj, NETD_SLOT);
+        GBinderLocalObject* obj;
+        GBinderServiceName* name;
+        if (!g_strcmp0(dev, HWBINDER_DEVICE)) {
+            obj = gbinder_servicemanager_new_local_object
+                (svcmgr, NETD_IFACE, netd_handler, NULL);
+            name = gbinder_servicename_new
+                (svcmgr, obj, NETD_SLOT);
+        } else {
+            obj = gbinder_servicemanager_new_local_object
+                (svcmgr, NETD_AIDL_IFACE, netd_handler, NULL);
+            gbinder_local_object_set_stability(obj, GBINDER_STABILITY_VINTF);
+            name = gbinder_servicename_new
+                (svcmgr, obj, NETD_AIDL_SLOT);
+        }
 
 #if USE_SYSTEMD
         /* Do we need to wait until the name is actually registered? */
@@ -133,7 +146,7 @@ int main(int argc, char* argv[])
         { "verbose", 'v', G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
            netd_opt_verbose, "Enable debug output", NULL },
         { "device", 'd', 0, G_OPTION_ARG_STRING, &dev,
-          "Binder device [" BINDER_DEVICE "]", "DEVICE" },
+          "Binder device [" HWBINDER_DEVICE "]", "DEVICE" },
         { NULL }
     };
 
@@ -147,7 +160,7 @@ int main(int argc, char* argv[])
             fprintf(stderr, "%s", help);
             g_free(help);
         } else {
-            ret = netd_run((dev && dev[0]) ? dev : BINDER_DEVICE);
+            ret = netd_run((dev && dev[0]) ? dev : HWBINDER_DEVICE);
         }
     } else {
         GERR("%s", error->message);
