@@ -16,7 +16,8 @@ BuildRequires:  pkgconfig(glib-2.0)
 Requires:       libgbinder >= %{libgbinder_version}
 
 %description
-dummy_netd provides the android.system.net.netd@1.1 service for devices which cannot work without it.
+dummy_netd provides the android.system.net.netd@1.1 or android.system.net.netd.INetd service
+for devices which cannot work without it.
 
 %prep
 %autosetup -n %{name}-%{version}
@@ -27,14 +28,9 @@ make KEEP_SYMBOLS=1 release
 %install
 %define target_wants_dir %{_unitdir}/graphical.target.wants
 %define service dummy_netd
-rm -rf %{buildroot}
 make install DESTDIR=%{buildroot} UNITDIR=%{_unitdir}
 mkdir -p %{buildroot}/%{target_wants_dir}
 ln -s ../%{service}.service %{buildroot}/%{target_wants_dir}/%{service}.service
-
-%clean
-rm -rf %{buildroot}
-make clean
 
 %pre
 systemctl stop %{service} ||:
@@ -47,7 +43,6 @@ systemctl start %{service} ||:
 systemctl daemon-reload ||:
 
 %files
-%defattr(-,root,root,-)
 %license LICENSE
 %{_sbindir}/dummy_netd
 %{target_wants_dir}/%{service}.service
