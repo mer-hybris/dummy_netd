@@ -1,5 +1,5 @@
 Name:           dummy_netd
-Version:        1.0.4
+Version:        1.0.5
 Release:        1
 Summary:        A simple dummy netd service implementation.
 License:        BSD
@@ -17,7 +17,8 @@ Requires:       libgbinder >= %{libgbinder_version}
 
 %description
 dummy_netd provides the android.system.net.netd@1.1 or android.system.net.netd.INetd service
-for devices which cannot work without it.
+for devices which cannot work without it. It also serves /dev/socket/dnsproxyd
+so Android vendor processes resolve names through the host resolver.
 
 %prep
 %autosetup -n %{name}-%{version}
