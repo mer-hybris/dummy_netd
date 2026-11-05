@@ -28,7 +28,7 @@ all: debug release
 # Sources
 #
 
-SRC = dummy_netd.c
+SRC = dummy_netd.c dns_proxy.c
 
 #
 # Directories

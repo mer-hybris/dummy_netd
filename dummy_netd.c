@@ -50,6 +50,9 @@
 #define RET_CMDLINE 1
 #define RET_ERR     2
 
+gboolean dns_proxy_start(void);
+void dns_proxy_stop(void);
+
 static
 gboolean
 netd_signal(
@@ -113,6 +116,9 @@ netd_run(
                 (svcmgr, obj, NETD_AIDL_SLOT);
         }
 
+        if (!dns_proxy_start())
+            GERR("DNS proxy failed, vendor name lookups will not resolve");
+
 #if USE_SYSTEMD
         /* Do we need to wait until the name is actually registered? */
         sd_notify(0, "READY=1");
@@ -120,6 +126,8 @@ netd_run(
 
         /* Run the event loop */
         g_main_loop_run(loop);
+
+        dns_proxy_stop();
 
         /* Exiting on signal */
         g_source_remove(sigterm);

@@ -9,13 +9,15 @@ EnvironmentFile=-/etc/sysconfig/dummy_netd
 ExecStart=/usr/sbin/dummy_netd $DUMMY_NETD_ARGS
 Restart=always
 TimeoutStartSec=60
+# inet (gid 3003) is the group vendor GPS processes use to connect.
+# Stay in the host netns so getaddrinfo reaches systemd-resolved.
+Group=inet
 # Sandboxing
 CapabilityBoundingSet=CAP_DAC_READ_SEARCH
 DeviceAllow=/dev/binder rw
 DeviceAllow=/dev/hwbinder rw
 DevicePolicy=closed
 NoNewPrivileges=yes
-PrivateNetwork=true
 PrivateTmp=yes
 ProtectHome=yes
 ProtectSystem=full
